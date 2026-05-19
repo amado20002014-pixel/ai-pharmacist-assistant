@@ -6,6 +6,132 @@ const SUPABASE_KEY = "sb_publishable_FXldtz1K4KsuRje0khdQDQ_B0DBzxi3";
 const CLAUDE_API_KEY = "YOUR_CLAUDE_API_KEY_HERE";
 
 // =============================================
+//   قاموس البحث العربي
+// =============================================
+const ARABIC_DICT = {
+  // مضادات حيوية
+  'اموكسيسيلين':'AMOXICILLIN','أموكسيسيلين':'AMOXICILLIN','أموكسيل':'AMOXICILLIN',
+  'اوجمنتين':'AMOXICILLIN','أوجمنتين':'AMOXICILLIN','كلافيوكس':'AMOXICILLIN',
+  'ازيثرومايسين':'AZITHROMYCIN','أزيثرومايسين':'AZITHROMYCIN','زيثروماكس':'AZITHROMYCIN',
+  'سيفترياكسون':'CEFTRIAXONE','روسيفين':'CEFTRIAXONE',
+  'سيفادروكسيل':'CEFADROXIL','سيفوتاكسيم':'CEFOTAXIME',
+  'سيبروفلوكساسين':'CIPROFLOXACIN','سيبروسين':'CIPROFLOXACIN',
+  'ميترونيدازول':'METRONIDAZOLE','فلاجيل':'METRONIDAZOLE',
+  'كليندامايسين':'CLINDAMYCIN','دوكسيسيكلين':'DOXYCYCLINE',
+  'تتراسيكلين':'TETRACYCLINE','اريثرومايسين':'ERYTHROMYCIN',
+  'ليفوفلوكساسين':'LEVOFLOXACIN','امبيسيلين':'AMPICILLIN',
+
+  // مسكنات ومضادات التهاب
+  'باراسيتامول':'PARACETAMOL','بانادول':'PARACETAMOL','ادول':'PARACETAMOL',
+  'أدول':'PARACETAMOL','تايلينول':'PARACETAMOL',
+  'ايبوبروفين':'IBUPROFEN','أيبوبروفين':'IBUPROFEN','بروفين':'IBUPROFEN','نوروفين':'IBUPROFEN',
+  'ديكلوفيناك':'DICLOFENAC','كتافلام':'DICLOFENAC','فولتارين':'DICLOFENAC',
+  'كيتوبروفين':'KETOPROFEN','نابروكسين':'NAPROXEN',
+  'ايتوريكوكسيب':'ETORICOXIB','إيتوريكوكسيب':'ETORICOXIB',
+  'ميلوكسيكام':'MELOXICAM','سيليكوكسيب':'CELECOXIB',
+  'ترامادول':'TRAMADOL','مورفين':'MORPHINE','كوديين':'CODEINE',
+
+  // معدة وهضم
+  'اوميبرازول':'OMEPRAZOLE','أوميبرازول':'OMEPRAZOLE','لوسيك':'OMEPRAZOLE',
+  'ايزوميبرازول':'ESOMEPRAZOLE','نيكسيوم':'ESOMEPRAZOLE',
+  'لانسوبرازول':'LANSOPRAZOLE','بانتوبرازول':'PANTOPRAZOLE',
+  'رانيتيدين':'RANITIDINE','زانتاك':'RANITIDINE',
+  'ميتوكلوبراميد':'METOCLOPRAMIDE','بريمبيران':'METOCLOPRAMIDE',
+  'اوندانسيترون':'ONDANSETRON','زوفران':'ONDANSETRON',
+
+  // قلب وضغط
+  'أملوديبين':'AMLODIPINE','املوديبين':'AMLODIPINE','نورفاسك':'AMLODIPINE',
+  'أتينولول':'ATENOLOL','ليزينوبريل':'LISINOPRIL',
+  'اينالابريل':'ENALAPRIL','إنالابريل':'ENALAPRIL','ريناتك':'ENALAPRIL',
+  'فالسارتان':'VALSARTAN','ديوفان':'VALSARTAN',
+  'لوزارتان':'LOSARTAN','كوزار':'LOSARTAN',
+  'ميتوبرولول':'METOPROLOL','كارفيديلول':'CARVEDILOL',
+  'فوروسيميد':'FUROSEMIDE','لازيكس':'FUROSEMIDE',
+  'هيدروكلوروثيازيد':'HYDROCHLOROTHIAZIDE','سبيرونولاكتون':'SPIRONOLACTONE',
+  'ديجوكسين':'DIGOXIN','أميودارون':'AMIODARONE',
+
+  // سكر
+  'ميتفورمين':'METFORMIN','جلوكوفاج':'METFORMIN',
+  'جليمبيريد':'GLIMEPIRIDE','أمارايل':'GLIMEPIRIDE',
+  'جليبنكلاميد':'GLIBENCLAMIDE','انسولين':'INSULIN','إنسولين':'INSULIN',
+  'سيتاجليبتين':'SITAGLIPTIN','جانوفيا':'SITAGLIPTIN',
+
+  // كوليسترول
+  'أتورفاستاتين':'ATORVASTATIN','ليبيتور':'ATORVASTATIN',
+  'روزوفاستاتين':'ROSUVASTATIN','كريستور':'ROSUVASTATIN',
+  'سيمفاستاتين':'SIMVASTATIN','زوكور':'SIMVASTATIN',
+
+  // جهاز تنفسي
+  'سالبوتامول':'SALBUTAMOL','فينتولين':'SALBUTAMOL',
+  'مونتيلوكاست':'MONTELUKAST','سينجولار':'MONTELUKAST',
+  'سيتيريزين':'CETIRIZINE','زيرتك':'CETIRIZINE',
+  'لوراتادين':'LORATADINE','كلاريتين':'LORATADINE',
+  'فيكسوفينادين':'FEXOFENADINE','تيلفاست':'FEXOFENADINE',
+  'ديكساميثازون':'DEXAMETHASONE','بريدنيزون':'PREDNISONE','بريدنيزولون':'PREDNISOLONE',
+
+  // أعصاب ونفسية
+  'بريجابالين':'PREGABALIN','ليريكا':'PREGABALIN',
+  'جابابنتين':'GABAPENTIN','نيورونتين':'GABAPENTIN',
+  'اريبيبرازول':'ARIPIPRAZOLE','ابيليفاي':'ARIPIPRAZOLE',
+  'كيوتيابين':'QUETIAPINE','سيروكيل':'QUETIAPINE',
+  'اسيتالوبرام':'ESCITALOPRAM','ليكسابرو':'ESCITALOPRAM',
+  'سيرترالين':'SERTRALINE','زولوفت':'SERTRALINE',
+  'فلوكسيتين':'FLUOXETINE','بروزاك':'FLUOXETINE',
+  'ديازيبام':'DIAZEPAM','فاليوم':'DIAZEPAM',
+  'الوبرازولام':'ALPRAZOLAM','زاناكس':'ALPRAZOLAM',
+  'ليفيتيراسيتام':'LEVETIRACETAM','كيبرا':'LEVETIRACETAM',
+  'كاربامازيبين':'CARBAMAZEPINE','تيجريتول':'CARBAMAZEPINE',
+
+  // فيتامينات ومكملات
+  'فيتامين د':'CHOLECALCIFEROL','فيتامين د3':'CHOLECALCIFEROL',
+  'كولكالسيفيرول':'CHOLECALCIFEROL','فيتامين c':'ASCORBIC ACID',
+  'فيتامين سي':'ASCORBIC ACID','حمض الاسكوربيك':'ASCORBIC ACID',
+  'كالسيوم':'CALCIUM','حديد':'IRON','فوليك اسيد':'FOLIC ACID',
+  'حمض الفوليك':'FOLIC ACID','زنك':'ZINC','اوميجا 3':'OMEGA',
+
+  // مجموعات طبية عامة
+  'مضاد حيوي':'ANTIBIOTIC','مضادات حيوية':'ANTIBIOTIC',
+  'مسكن':'PARACETAMOL','مسكنات':'PARACETAMOL',
+  'ضغط':'AMLODIPINE','ضغط الدم':'AMLODIPINE',
+  'سكر':'METFORMIN','سكري':'METFORMIN',
+  'كوليسترول':'ROSUVASTATIN','دهون':'ROSUVASTATIN',
+  'معدة':'OMEPRAZOLE','حرقة':'OMEPRAZOLE',
+  'حساسية':'CETIRIZINE','الرجية':'CETIRIZINE',
+  'نوم':'DIAZEPAM','منوم':'DIAZEPAM',
+  'اكتئاب':'ESCITALOPRAM','قلق':'ALPRAZOLAM',
+  'تادالافيل':'TADALAFIL','سيالاس':'TADALAFIL',
+  'سيلدينافيل':'SILDENAFIL','فياجرا':'SILDENAFIL',
+  'ميكونازول':'MICONAZOLE','فلوكونازول':'FLUCONAZOLE',
+  'ديفلوكان':'FLUCONAZOLE','ليدوكايين':'LIDOCAINE',
+};
+
+// =============================================
+//   ترجمة الاستعلام العربي للإنجليزي
+// =============================================
+function translateArabicQuery(query) {
+  const q = query.trim();
+  if (!q) return null;
+
+  // بحث مباشر في القاموس
+  if (ARABIC_DICT[q]) return ARABIC_DICT[q];
+
+  // بحث جزئي — لو الكلمة موجودة في أي مفتاح
+  for (const [arabic, english] of Object.entries(ARABIC_DICT)) {
+    if (arabic.includes(q) || q.includes(arabic)) {
+      return english;
+    }
+  }
+  return null;
+}
+
+// =============================================
+//   هل الاستعلام عربي؟
+// =============================================
+function isArabic(text) {
+  return /[\u0600-\u06FF]/.test(text);
+}
+
+// =============================================
 //   STATE
 // =============================================
 let allMedicines = [];
@@ -55,10 +181,8 @@ async function loadAllMedicines() {
 function populateFilters() {
   const groups = [...new Set(allMedicines.map(m => m.medical_group).filter(Boolean))].sort();
   const companies = [...new Set(allMedicines.map(m => m.manufacturer).filter(Boolean))].sort();
-
   const gf = document.getElementById('groupFilter');
   groups.forEach(g => { const o = document.createElement('option'); o.value = g; o.textContent = g; gf.appendChild(o); });
-
   const cf = document.getElementById('companyFilter');
   companies.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; cf.appendChild(o); });
 }
@@ -72,29 +196,59 @@ function showInitialState() {
     <div class="empty-state">
       <div class="es-emoji">💊</div>
       <h3>ابدأ البحث</h3>
-      <p>اكتب اسم الدواء أو المادة الفعالة</p>
+      <p>اكتب بالعربي أو الإنجليزي</p>
     </div>`;
   document.getElementById('loadMore').style.display = 'none';
 }
 
 function searchMedicines() {
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const raw = document.getElementById('searchInput').value.trim();
   const group = document.getElementById('groupFilter').value;
   const company = document.getElementById('companyFilter').value;
   const clearBtn = document.getElementById('searchClear');
-  clearBtn.style.display = q ? 'flex' : 'none';
+  clearBtn.style.display = raw ? 'flex' : 'none';
 
-  if (!q && !group && !company) { showInitialState(); return; }
+  if (!raw && !group && !company) { showInitialState(); return; }
+
+  // ترجمة لو عربي
+  let q = raw.toLowerCase();
+  let translatedTerm = null;
+  if (isArabic(raw)) {
+    translatedTerm = translateArabicQuery(raw);
+  }
 
   filteredResults = allMedicines.filter(m => {
-    const mq = !q || (m.trade_name || '').toLowerCase().includes(q) || (m.active_ingredient || '').toLowerCase().includes(q) || (m.drug_code || '').includes(q);
-    const mg = !group || m.medical_group === group;
-    const mc = !company || m.manufacturer === company;
-    return mq && mg && mc;
+    const name = (m.trade_name || '').toLowerCase();
+    const ing  = (m.active_ingredient || '').toLowerCase();
+    const code = (m.drug_code || '').toLowerCase();
+
+    let matchQuery = false;
+    if (!raw) {
+      matchQuery = true;
+    } else if (translatedTerm) {
+      // بحث بالمصطلح المترجم
+      matchQuery = ing.includes(translatedTerm.toLowerCase()) || name.includes(translatedTerm.toLowerCase());
+    } else {
+      // بحث عادي بالإنجليزي
+      matchQuery = name.includes(q) || ing.includes(q) || code.includes(q);
+    }
+
+    const matchGroup   = !group   || m.medical_group === group;
+    const matchCompany = !company || m.manufacturer  === company;
+    return matchQuery && matchGroup && matchCompany;
   });
 
+  // لو ما لقاش نتايج بالترجمة، جرب بحث جزئي
+  if (filteredResults.length === 0 && translatedTerm) {
+    const partial = translatedTerm.toLowerCase().split(' ')[0];
+    filteredResults = allMedicines.filter(m => {
+      const ing = (m.active_ingredient || '').toLowerCase();
+      return ing.includes(partial);
+    });
+  }
+
   displayedCount = 0;
-  renderResults(true);
+  renderResults(true, translatedTerm, raw);
 }
 
 function clearSearch() {
@@ -103,14 +257,18 @@ function clearSearch() {
   showInitialState();
 }
 
-function renderResults(reset = false) {
+function renderResults(reset = false, translatedTerm = null, originalQuery = '') {
   const container = document.getElementById('searchResults');
-  const stats = document.getElementById('searchStats');
-  const loadMore = document.getElementById('loadMore');
+  const stats     = document.getElementById('searchStats');
+  const loadMore  = document.getElementById('loadMore');
 
   if (reset) container.innerHTML = '';
 
-  stats.textContent = `نتائج البحث: ${filteredResults.length.toLocaleString()} دواء`;
+  let statsText = `نتائج البحث: ${filteredResults.length.toLocaleString()} دواء`;
+  if (translatedTerm && isArabic(originalQuery)) {
+    statsText += ` &nbsp;|&nbsp; 🔄 تم البحث عن: <b>${translatedTerm}</b>`;
+  }
+  stats.innerHTML = statsText;
 
   if (!filteredResults.length) {
     container.innerHTML = `
@@ -136,7 +294,7 @@ function createMedCard(med) {
   el.className = 'med-card';
   el.onclick = () => openSheet(med);
   const price = med.price ? `${parseFloat(med.price).toFixed(2)} ج` : '—';
-  const ing = med.active_ingredient || '';
+  const ing   = med.active_ingredient || '';
   const group = med.medical_group || '';
   el.innerHTML = `
     <div class="card-icon">💊</div>
@@ -148,8 +306,7 @@ function createMedCard(med) {
         ${group ? `<span class="tag tag-group">${group.length > 25 ? group.substring(0,25)+'...' : group}</span>` : ''}
       </div>
     </div>
-    <span class="card-chevron">‹</span>
-  `;
+    <span class="card-chevron">‹</span>`;
   return el;
 }
 
@@ -157,13 +314,23 @@ function createMedCard(med) {
 //   EQUIVALENT
 // =============================================
 function searchEquivalent() {
-  const q = document.getElementById('equivInput').value.trim().toLowerCase();
+  const raw = document.getElementById('equivInput').value.trim();
   const src = document.getElementById('equivSource');
   const res = document.getElementById('equivResults');
 
-  if (!q) { src.innerHTML = ''; res.innerHTML = ''; return; }
+  if (!raw) { src.innerHTML = ''; res.innerHTML = ''; return; }
 
-  const source = allMedicines.find(m => (m.trade_name || '').toLowerCase().includes(q));
+  let searchTerm = raw.toLowerCase();
+  if (isArabic(raw)) {
+    const translated = translateArabicQuery(raw);
+    if (translated) searchTerm = translated.toLowerCase();
+  }
+
+  const source = allMedicines.find(m =>
+    (m.trade_name || '').toLowerCase().includes(searchTerm) ||
+    (m.active_ingredient || '').toLowerCase().includes(searchTerm)
+  );
+
   if (!source || !source.active_ingredient) {
     src.innerHTML = '';
     res.innerHTML = `<div class="empty-state"><div class="es-emoji">💊</div><h3>لا توجد نتائج</h3><p>تأكد من كتابة اسم الدواء بشكل صحيح</p></div>`;
@@ -195,19 +362,30 @@ function searchEquivalent() {
 //   SUGGEST
 // =============================================
 function suggestDrug(inputId, dropId) {
-  const q = document.getElementById(inputId).value.trim().toLowerCase();
+  const raw  = document.getElementById(inputId).value.trim();
   const drop = document.getElementById(dropId);
-  if (q.length < 2) { drop.innerHTML = ''; return; }
+  if (raw.length < 2) { drop.innerHTML = ''; return; }
 
-  const matches = allMedicines.filter(m => (m.trade_name || '').toLowerCase().includes(q)).slice(0, 8);
+  let searchTerm = raw.toLowerCase();
+  if (isArabic(raw)) {
+    const translated = translateArabicQuery(raw);
+    if (translated) searchTerm = translated.toLowerCase();
+  }
+
+  const matches = allMedicines
+    .filter(m =>
+      (m.trade_name || '').toLowerCase().includes(searchTerm) ||
+      (m.active_ingredient || '').toLowerCase().includes(searchTerm)
+    )
+    .slice(0, 8);
+
   if (!matches.length) { drop.innerHTML = ''; return; }
 
   drop.innerHTML = matches.map(m => `
     <div class="sug-item" onclick="selectSug('${inputId}','${dropId}','${(m.trade_name||'').replace(/'/g,"\\'")}')">
       <div class="sug-name">${m.trade_name}</div>
       ${m.active_ingredient ? `<div class="sug-ing">${m.active_ingredient}</div>` : ''}
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function selectSug(inputId, dropId, name) {
@@ -221,7 +399,7 @@ function selectSug(inputId, dropId, name) {
 async function checkInteraction() {
   const d1 = document.getElementById('drug1Input').value.trim();
   const d2 = document.getElementById('drug2Input').value.trim();
-  const el = document.getElementById('interactionResult');
+  const el  = document.getElementById('interactionResult');
 
   if (!d1 || !d2) {
     el.innerHTML = `<div class="result-box result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدوائين</p></div>`;
@@ -256,7 +434,7 @@ async function checkInteraction() {
 
 async function checkPregnancy() {
   const drug = document.getElementById('pregInput').value.trim();
-  const el = document.getElementById('pregnancyResult');
+  const el   = document.getElementById('pregnancyResult');
 
   if (!drug) {
     el.innerHTML = `<div class="result-box result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدواء</p></div>`;
@@ -283,7 +461,7 @@ async function checkPregnancy() {
 // =============================================
 async function sendChat() {
   const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
+  const msg   = input.value.trim();
   if (!msg || isLoading) return;
   input.value = '';
 
@@ -309,26 +487,24 @@ async function sendChat() {
 
 function addBubble(text, type) {
   const msgs = document.getElementById('chatMessages');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = `chat-row ${type}`;
   div.innerHTML = `
     <div class="chat-avatar">${type === 'bot' ? '⚕️' : '👨‍⚕️'}</div>
-    <div class="chat-bubble">${text.replace(/\n/g,'<br/>')}</div>
-  `;
+    <div class="chat-bubble">${text.replace(/\n/g,'<br/>')}</div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
 function addTyping() {
-  const id = 'typing-' + Date.now();
+  const id   = 'typing-' + Date.now();
   const msgs = document.getElementById('chatMessages');
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'chat-row bot';
   div.id = id;
   div.innerHTML = `
     <div class="chat-avatar">⚕️</div>
-    <div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
-  `;
+    <div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return id;
@@ -392,8 +568,7 @@ function openSheet(med) {
         <div class="sii-value" style="font-size:12px">${med.medical_group || '—'}</div>
       </div>
     </div>
-    <button class="sheet-equiv-btn" onclick="findEquiv('${(med.trade_name||'').replace(/'/g,"\\'")}')">💊 ابحث عن المثيل</button>
-  `;
+    <button class="sheet-equiv-btn" onclick="findEquiv('${(med.trade_name||'').replace(/'/g,"\\'")}')">💊 ابحث عن المثيل</button>`;
   document.getElementById('sheetBg').classList.add('show');
   document.getElementById('bottomSheet').classList.add('open');
 }
@@ -416,15 +591,10 @@ function findEquiv(name) {
 function showPage(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll('.bn-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item, .bn-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
-
-  const title = pageTitles[page] || '';
   const titleEl = document.getElementById('pageTitle');
-  if (titleEl) titleEl.textContent = title;
-
+  if (titleEl) titleEl.textContent = pageTitles[page] || '';
   if (window.innerWidth <= 768) closeSidebar();
 }
 
@@ -436,10 +606,8 @@ function switchTab(tab, btn) {
 }
 
 function toggleSidebar() {
-  const s = document.getElementById('sidebar');
-  const o = document.getElementById('overlay');
-  s.classList.toggle('open');
-  o.classList.toggle('show');
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
 }
 
 function closeSidebar() {
@@ -447,7 +615,6 @@ function closeSidebar() {
   document.getElementById('overlay').classList.remove('show');
 }
 
-// Close suggestions when clicking outside
 document.addEventListener('click', e => {
   if (!e.target.closest('.drug-inp-wrap') && !e.target.closest('.search-input-group')) {
     document.querySelectorAll('.suggest-drop').forEach(d => d.innerHTML = '');
