@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const fullPrompt = system ? `${system}\n\n${userMessage}` : userMessage;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCJNhLrRToCY9xTg0WLEH5AGY4aibw39kc`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCJNhLrRToCY9xTg0WLEH5AGY4aibw39kc`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
