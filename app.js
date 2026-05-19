@@ -3,7 +3,7 @@
 // =============================================
 const SUPABASE_URL = "https://atgyefigxigkfpfgbycu.supabase.co";
 const SUPABASE_KEY = "sb_publishable_FXldtz1K4KsuRje0khdQDQ_B0DBzxi3";
-const CLAUDE_API_KEY = "YOUR_CLAUDE_API_KEY_HERE";
+
 
 // =============================================
 //   قاموس البحث العربي
