@@ -529,7 +529,9 @@ async function callClaude(userMsg, system = null) {
       })
     });
     const data = await res.json();
-    return data.content?.[0]?.text || "حدث خطأ.";
+    if (data.content && data.content[0]) return data.content[0].text;
+if (data.error) return "خطأ: " + data.error.message;
+return "لم يصل رد.";
   } catch {
     return "تعذر الاتصال. تحقق من الإنترنت.";
   }
