@@ -3,7 +3,7 @@
 // =============================================
 const SUPABASE_URL = "https://atgyefigxigkfpfgbycu.supabase.co";
 const SUPABASE_KEY = "sb_publishable_FXldtz1K4KsuRje0khdQDQ_B0DBzxi3";
-const CLAUDE_API_KEY = "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
+const CLAUDE_API_KEY = "sk-ant-api03-V_he5o5ASvK8h3DoqmR56uj-EZ2JeAZH3lhdzekJJ0Q8qzohbgEQyShx3ngpBF6EMWtZW6UZ1ZDtKi1ATEEGUA-r31MqwAA";
 
 // =============================================
 //   قاموس البحث العربي
