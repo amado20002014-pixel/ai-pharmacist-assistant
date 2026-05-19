@@ -1,157 +1,225 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>دليل الصيدلي المصري</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <title>دليل الصيدلي</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-icon">⚕</span>
-        <div>
-          <div class="logo-title">دليل الصيدلي</div>
-          <div class="logo-sub">السوق المصري</div>
-        </div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="url(#brand-grad)"/>
+          <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="brand-grad" x1="0" y1="0" x2="28" y2="28">
+              <stop stop-color="#22C55E"/>
+              <stop offset="1" stop-color="#15803D"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
-      <nav class="nav">
-        <button class="nav-btn active" onclick="showPage('search')">🔍 البحث</button>
-        <button class="nav-btn" onclick="showPage('equivalent')">💊 المثيل</button>
-        <button class="nav-btn" onclick="showPage('interactions')">⚠️ التعارضات</button>
-        <button class="nav-btn" onclick="showPage('ai')">🤖 المساعد</button>
-      </nav>
-      <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      <div>
+        <div class="brand-name">دليل الصيدلي</div>
+        <div class="brand-sub">السوق المصري</div>
+      </div>
     </div>
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-      <button onclick="showPage('search');toggleMenu()">🔍 البحث عن دواء</button>
-      <button onclick="showPage('equivalent');toggleMenu()">💊 البحث عن مثيل</button>
-      <button onclick="showPage('interactions');toggleMenu()">⚠️ التعارضات الدوائية</button>
-      <button onclick="showPage('ai');toggleMenu()">🤖 المساعد الذكي</button>
+
+    <div class="nav-section-label">القائمة</div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="search" onclick="showPage('search',this)">
+        <span class="nav-icon">🔍</span>
+        <span>البحث عن دواء</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <button class="nav-item" data-page="equivalent" onclick="showPage('equivalent',this)">
+        <span class="nav-icon">💊</span>
+        <span>البحث عن مثيل</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <button class="nav-item" data-page="interactions" onclick="showPage('interactions',this)">
+        <span class="nav-icon">⚠️</span>
+        <span>التعارضات الدوائية</span>
+        <span class="nav-arrow">›</span>
+      </button>
+      <button class="nav-item" data-page="ai" onclick="showPage('ai',this)">
+        <span class="nav-icon">🤖</span>
+        <span>المساعد الذكي</span>
+        <span class="nav-arrow">›</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-status">
+      <div class="status-dot"></div>
+      <span id="dbCount">جاري التحميل...</span>
     </div>
+  </aside>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <button class="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-brand">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+        <rect width="28" height="28" rx="8" fill="url(#mb-grad)"/>
+        <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+        <defs><linearGradient id="mb-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+      </svg>
+      <span id="pageTitle">البحث عن دواء</span>
+    </div>
+    <div style="width:40px"></div>
   </header>
 
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Content -->
   <main class="main">
 
-    <!-- ===== PAGE: SEARCH ===== -->
-    <div id="page-search" class="page active">
-      <div class="page-hero">
-        <h1>🔍 البحث عن دواء</h1>
-        <p>ابحث في أكثر من 14,000 دواء في السوق المصري</p>
-      </div>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="اكتب اسم الدواء..." oninput="searchMedicines()" autocomplete="off"/>
-        <span class="search-icon">🔍</span>
-      </div>
-      <div class="filters">
-        <select id="groupFilter" onchange="searchMedicines()">
-          <option value="">كل المجموعات</option>
-        </select>
-        <select id="companyFilter" onchange="searchMedicines()">
-          <option value="">كل الشركات</option>
-        </select>
-      </div>
-      <div id="searchStats" class="search-stats"></div>
-      <div id="searchResults" class="results-grid"></div>
-      <div id="loadMore" class="load-more-wrap" style="display:none">
-        <button onclick="loadMoreResults()">تحميل المزيد</button>
-      </div>
-    </div>
-
-    <!-- ===== PAGE: EQUIVALENT ===== -->
-    <div id="page-equivalent" class="page">
-      <div class="page-hero">
-        <h1>💊 البحث عن المثيل</h1>
-        <p>ابحث عن الأدوية البديلة بنفس المادة الفعالة</p>
-      </div>
-      <div class="search-box">
-        <input type="text" id="equivInput" placeholder="اكتب اسم الدواء للبحث عن مثيله..." oninput="searchEquivalent()" autocomplete="off"/>
-        <span class="search-icon">💊</span>
-      </div>
-      <div id="equivSource" class="equiv-source" style="display:none"></div>
-      <div id="equivResults" class="results-grid"></div>
-    </div>
-
-    <!-- ===== PAGE: INTERACTIONS ===== -->
-    <div id="page-interactions" class="page">
-      <div class="page-hero">
-        <h1>⚠️ التعارضات الدوائية</h1>
-        <p>افحص التعارضات بين الأدوية وتعارضاتها مع الحمل والرضاعة</p>
+    <!-- SEARCH -->
+    <section id="page-search" class="page active">
+      <div class="page-top">
+        <h1>البحث عن دواء 🔍</h1>
+        <p>ابحث في أكثر من ١٤,٠٠٠ دواء</p>
       </div>
 
-      <div class="interact-tabs">
-        <button class="itab active" onclick="switchITab('drug-drug')">💊 دواء مع دواء</button>
-        <button class="itab" onclick="switchITab('pregnancy')">🤰 الحمل والرضاعة</button>
-      </div>
-
-      <!-- Drug-Drug -->
-      <div id="itab-drug-drug" class="itab-content active">
-        <div class="drug-pair">
-          <div class="drug-input-wrap">
-            <label>الدواء الأول</label>
-            <input type="text" id="drug1Input" placeholder="اكتب اسم الدواء..." oninput="suggestDrug('drug1Input','drug1Suggest')" autocomplete="off"/>
-            <div class="suggest-box" id="drug1Suggest"></div>
-          </div>
-          <div class="plus-icon">+</div>
-          <div class="drug-input-wrap">
-            <label>الدواء الثاني</label>
-            <input type="text" id="drug2Input" placeholder="اكتب اسم الدواء..." oninput="suggestDrug('drug2Input','drug2Suggest')" autocomplete="off"/>
-            <div class="suggest-box" id="drug2Suggest"></div>
-          </div>
+      <div class="search-wrap">
+        <div class="search-input-group">
+          <span class="s-icon">🔍</span>
+          <input id="searchInput" type="text" placeholder="اسم الدواء أو المادة الفعالة..." oninput="searchMedicines()" autocomplete="off"/>
+          <button class="s-clear" id="searchClear" onclick="clearSearch()" style="display:none">×</button>
         </div>
-        <button class="check-btn" onclick="checkInteraction()">فحص التعارض 🔎</button>
-        <div id="interactionResult" class="interaction-result"></div>
-      </div>
-
-      <!-- Pregnancy -->
-      <div id="itab-pregnancy" class="itab-content">
-        <div class="search-box">
-          <input type="text" id="pregInput" placeholder="اكتب اسم الدواء..." oninput="suggestDrug('pregInput','pregSuggest')" autocomplete="off"/>
-          <span class="search-icon">🤰</span>
+        <div class="filter-chips">
+          <select id="groupFilter" onchange="searchMedicines()"><option value="">كل المجموعات</option></select>
+          <select id="companyFilter" onchange="searchMedicines()"><option value="">كل الشركات</option></select>
         </div>
-        <div class="suggest-box" id="pregSuggest"></div>
-        <button class="check-btn" onclick="checkPregnancy()">فحص الأمان 🔎</button>
-        <div id="pregnancyResult" class="interaction-result"></div>
       </div>
-    </div>
 
-    <!-- ===== PAGE: AI ===== -->
-    <div id="page-ai" class="page">
-      <div class="page-hero">
-        <h1>🤖 المساعد الذكي</h1>
-        <p>اسأل عن أي دواء أو حالة طبية أو تعارض دوائي</p>
+      <div id="searchStats" class="result-count"></div>
+      <div id="searchResults" class="cards-list"></div>
+      <div id="loadMore" class="load-more-btn" style="display:none">
+        <button onclick="loadMoreResults()">عرض المزيد</button>
+      </div>
+    </section>
+
+    <!-- EQUIVALENT -->
+    <section id="page-equivalent" class="page">
+      <div class="page-top">
+        <h1>البحث عن مثيل 💊</h1>
+        <p>أدوية بنفس المادة الفعالة</p>
+      </div>
+      <div class="search-wrap">
+        <div class="search-input-group">
+          <span class="s-icon">💊</span>
+          <input id="equivInput" type="text" placeholder="اكتب اسم الدواء..." oninput="searchEquivalent()" autocomplete="off"/>
+        </div>
+      </div>
+      <div id="equivSource"></div>
+      <div id="equivResults" class="cards-list"></div>
+    </section>
+
+    <!-- INTERACTIONS -->
+    <section id="page-interactions" class="page">
+      <div class="page-top">
+        <h1>التعارضات ⚠️</h1>
+        <p>فحص التعارض مع الأدوية والحمل والرضاعة</p>
+      </div>
+
+      <div class="pill-tabs">
+        <button class="pill active" onclick="switchTab('drug-drug',this)">💊 دواء مع دواء</button>
+        <button class="pill" onclick="switchTab('pregnancy',this)">🤰 حمل ورضاعة</button>
+      </div>
+
+      <div id="tab-drug-drug" class="tab-panel active">
+        <div class="interact-box">
+          <div class="two-drugs">
+            <div class="drug-inp-wrap">
+              <label>الدواء الأول</label>
+              <input id="drug1Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug1Input','sug1')" autocomplete="off"/>
+              <div class="suggest-drop" id="sug1"></div>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="drug-inp-wrap">
+              <label>الدواء الثاني</label>
+              <input id="drug2Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug2Input','sug2')" autocomplete="off"/>
+              <div class="suggest-drop" id="sug2"></div>
+            </div>
+          </div>
+          <button class="cta-btn" onclick="checkInteraction()">🔎 فحص التعارض</button>
+        </div>
+        <div id="interactionResult"></div>
+      </div>
+
+      <div id="tab-pregnancy" class="tab-panel">
+        <div class="interact-box">
+          <div class="drug-inp-wrap" style="margin-bottom:16px">
+            <label>اسم الدواء</label>
+            <input id="pregInput" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('pregInput','pregSug')" autocomplete="off"/>
+            <div class="suggest-drop" id="pregSug"></div>
+          </div>
+          <button class="cta-btn" onclick="checkPregnancy()">🔎 فحص الأمان</button>
+        </div>
+        <div id="pregnancyResult"></div>
+      </div>
+    </section>
+
+    <!-- AI CHAT -->
+    <section id="page-ai" class="page">
+      <div class="page-top">
+        <h1>المساعد الذكي 🤖</h1>
+        <p>اسأل عن أي دواء أو حالة طبية</p>
       </div>
       <div class="chat-container">
         <div class="chat-messages" id="chatMessages">
-          <div class="chat-msg bot">
-            <div class="msg-avatar">⚕</div>
-            <div class="msg-bubble">
-              أهلاً! أنا مساعدك الدوائي الذكي 👋<br/>
-              اسألني عن أي دواء، مثيل، تعارض، أو أي سؤال في المجال الصيدلي وهساعدك فوراً.
-            </div>
+          <div class="chat-row bot">
+            <div class="chat-avatar">⚕️</div>
+            <div class="chat-bubble">أهلاً! أنا مساعدك الدوائي 👋<br/>اسألني عن أي دواء، مثيل، تعارض، أو جرعة.</div>
           </div>
         </div>
-        <div class="chat-input-wrap">
-          <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') sendChat()"/>
-          <button onclick="sendChat()" class="send-btn">إرسال ➤</button>
+        <div class="chat-input-bar">
+          <input id="chatInput" type="text" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter')sendChat()"/>
+          <button class="chat-send" onclick="sendChat()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
 
   </main>
 
-  <!-- Medicine Modal -->
-  <div id="medModal" class="modal" onclick="closeModal(event)">
-    <div class="modal-box">
-      <button class="modal-close" onclick="document.getElementById('medModal').classList.remove('open')">✕</button>
-      <div id="modalContent"></div>
-    </div>
+  <!-- Bottom Sheet for medicine details -->
+  <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-pill"></div>
+    <div id="sheetContent" class="sheet-body"></div>
   </div>
+
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="bn-item active" data-page="search" onclick="showPage('search',this)">
+      <span class="bn-icon">🔍</span>
+      <span class="bn-label">بحث</span>
+    </button>
+    <button class="bn-item" data-page="equivalent" onclick="showPage('equivalent',this)">
+      <span class="bn-icon">💊</span>
+      <span class="bn-label">مثيل</span>
+    </button>
+    <button class="bn-item" data-page="interactions" onclick="showPage('interactions',this)">
+      <span class="bn-icon">⚠️</span>
+      <span class="bn-label">تعارضات</span>
+    </button>
+    <button class="bn-item" data-page="ai" onclick="showPage('ai',this)">
+      <span class="bn-icon">🤖</span>
+      <span class="bn-label">مساعد</span>
+    </button>
+  </nav>
 
   <script src="app.js"></script>
 </body>

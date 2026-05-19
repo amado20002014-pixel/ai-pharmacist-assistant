@@ -1,117 +1,106 @@
 // =============================================
-//   إعدادات Supabase
+//   CONFIG
 // =============================================
 const SUPABASE_URL = "https://atgyefigxigkfpfgbycu.supabase.co";
 const SUPABASE_KEY = "sb_publishable_FXldtz1K4KsuRje0khdQDQ_B0DBzxi3";
-
-// =============================================
-//   إعدادات Claude AI
-//   ضع API Key بتاعك هنا
-// =============================================
 const CLAUDE_API_KEY = "YOUR_CLAUDE_API_KEY_HERE";
 
 // =============================================
-//   متغيرات عامة
+//   STATE
 // =============================================
 let allMedicines = [];
 let filteredResults = [];
 let displayedCount = 0;
 const PAGE_SIZE = 30;
 let isLoading = false;
+const pageTitles = {
+  search: 'البحث عن دواء',
+  equivalent: 'البحث عن مثيل',
+  interactions: 'التعارضات',
+  ai: 'المساعد الذكي'
+};
 
 // =============================================
-//   تحميل البيانات عند فتح الصفحة
+//   LOAD DATA
 // =============================================
 async function loadAllMedicines() {
   try {
-    let allData = [];
+    let all = [];
     let from = 0;
-    const batchSize = 1000;
-
+    const batch = 1000;
     while (true) {
       const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/medicines?select=*&order=trade_name.asc&limit=${batchSize}&offset=${from}`,
+        `${SUPABASE_URL}/rest/v1/medicines?select=*&order=trade_name.asc&limit=${batch}&offset=${from}`,
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
       );
       const data = await res.json();
-      if (!data || data.length === 0) break;
-      allData = allData.concat(data);
-      if (data.length < batchSize) break;
-      from += batchSize;
+      if (!data || !data.length) break;
+      all = all.concat(data);
+      if (data.length < batch) break;
+      from += batch;
     }
-
-    allMedicines = allData;
-    console.log(`✅ تم تحميل ${allMedicines.length} دواء`);
+    allMedicines = all;
+    document.getElementById('dbCount').textContent = `${allMedicines.length.toLocaleString()} دواء متاح`;
     populateFilters();
     showInitialState();
-  } catch (err) {
-    console.error("خطأ في تحميل البيانات:", err);
+  } catch (e) {
+    document.getElementById('dbCount').textContent = 'خطأ في التحميل';
+    console.error(e);
   }
 }
 
 // =============================================
-//   ملء الفلاتر
+//   FILTERS
 // =============================================
 function populateFilters() {
   const groups = [...new Set(allMedicines.map(m => m.medical_group).filter(Boolean))].sort();
   const companies = [...new Set(allMedicines.map(m => m.manufacturer).filter(Boolean))].sort();
 
   const gf = document.getElementById('groupFilter');
-  groups.forEach(g => {
-    const opt = document.createElement('option');
-    opt.value = g;
-    opt.textContent = g;
-    gf.appendChild(opt);
-  });
+  groups.forEach(g => { const o = document.createElement('option'); o.value = g; o.textContent = g; gf.appendChild(o); });
 
   const cf = document.getElementById('companyFilter');
-  companies.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = c;
-    cf.appendChild(opt);
-  });
+  companies.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; cf.appendChild(o); });
 }
 
+// =============================================
+//   SEARCH
+// =============================================
 function showInitialState() {
-  const el = document.getElementById('searchResults');
-  const stats = document.getElementById('searchStats');
-  stats.textContent = `إجمالي قاعدة البيانات: ${allMedicines.length.toLocaleString()} دواء`;
-  el.innerHTML = `
-    <div class="empty-state" style="grid-column:1/-1">
-      <div class="empty-icon">💊</div>
-      <h3>ابحث عن أي دواء</h3>
-      <p>اكتب في مربع البحث للعثور على الدواء المطلوب</p>
+  document.getElementById('searchStats').textContent = `إجمالي قاعدة البيانات: ${allMedicines.length.toLocaleString()} دواء`;
+  document.getElementById('searchResults').innerHTML = `
+    <div class="empty-state">
+      <div class="es-emoji">💊</div>
+      <h3>ابدأ البحث</h3>
+      <p>اكتب اسم الدواء أو المادة الفعالة</p>
     </div>`;
   document.getElementById('loadMore').style.display = 'none';
 }
 
-// =============================================
-//   البحث في الأدوية
-// =============================================
 function searchMedicines() {
-  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
   const group = document.getElementById('groupFilter').value;
   const company = document.getElementById('companyFilter').value;
+  const clearBtn = document.getElementById('searchClear');
+  clearBtn.style.display = q ? 'flex' : 'none';
 
-  if (!query && !group && !company) {
-    showInitialState();
-    return;
-  }
+  if (!q && !group && !company) { showInitialState(); return; }
 
   filteredResults = allMedicines.filter(m => {
-    const matchQuery = !query || (
-      (m.trade_name || '').toLowerCase().includes(query) ||
-      (m.active_ingredient || '').toLowerCase().includes(query) ||
-      (m.drug_code || '').toLowerCase().includes(query)
-    );
-    const matchGroup = !group || m.medical_group === group;
-    const matchCompany = !company || m.manufacturer === company;
-    return matchQuery && matchGroup && matchCompany;
+    const mq = !q || (m.trade_name || '').toLowerCase().includes(q) || (m.active_ingredient || '').toLowerCase().includes(q) || (m.drug_code || '').includes(q);
+    const mg = !group || m.medical_group === group;
+    const mc = !company || m.manufacturer === company;
+    return mq && mg && mc;
   });
 
   displayedCount = 0;
   renderResults(true);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  showInitialState();
 }
 
 function renderResults(reset = false) {
@@ -123,10 +112,10 @@ function renderResults(reset = false) {
 
   stats.textContent = `نتائج البحث: ${filteredResults.length.toLocaleString()} دواء`;
 
-  if (filteredResults.length === 0) {
+  if (!filteredResults.length) {
     container.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-icon">🔍</div>
+      <div class="empty-state">
+        <div class="es-emoji">🔍</div>
         <h3>لا توجد نتائج</h3>
         <p>جرب كلمة بحث مختلفة</p>
       </div>`;
@@ -137,297 +126,229 @@ function renderResults(reset = false) {
   const slice = filteredResults.slice(displayedCount, displayedCount + PAGE_SIZE);
   slice.forEach(med => container.appendChild(createMedCard(med)));
   displayedCount += slice.length;
-
   loadMore.style.display = displayedCount < filteredResults.length ? 'block' : 'none';
 }
 
-function loadMoreResults() {
-  renderResults(false);
-}
+function loadMoreResults() { renderResults(false); }
 
 function createMedCard(med) {
-  const card = document.createElement('div');
-  card.className = 'med-card';
-  card.onclick = () => openModal(med);
-
-  const price = med.price ? `${parseFloat(med.price).toFixed(2)} ج` : 'غير محدد';
-  const ingredient = med.active_ingredient || 'غير محدد';
+  const el = document.createElement('div');
+  el.className = 'med-card';
+  el.onclick = () => openSheet(med);
+  const price = med.price ? `${parseFloat(med.price).toFixed(2)} ج` : '—';
+  const ing = med.active_ingredient || '';
   const group = med.medical_group || '';
-  const company = med.manufacturer || '';
-
-  card.innerHTML = `
-    <div class="med-name">${med.trade_name || ''}</div>
-    <div class="med-ingredient">${ingredient.length > 60 ? ingredient.substring(0,60)+'...' : ingredient}</div>
-    <div class="med-meta">
-      <span class="med-price">${price}</span>
-      ${group ? `<span class="med-group">${group}</span>` : ''}
+  el.innerHTML = `
+    <div class="card-icon">💊</div>
+    <div class="card-body">
+      <div class="card-name">${med.trade_name || ''}</div>
+      ${ing ? `<div class="card-ing">${ing.length > 55 ? ing.substring(0,55)+'...' : ing}</div>` : ''}
+      <div class="card-tags">
+        <span class="tag tag-price">${price}</span>
+        ${group ? `<span class="tag tag-group">${group.length > 25 ? group.substring(0,25)+'...' : group}</span>` : ''}
+      </div>
     </div>
-    ${company ? `<div class="med-company">🏭 ${company}</div>` : ''}
+    <span class="card-chevron">‹</span>
   `;
-  return card;
+  return el;
 }
 
 // =============================================
-//   البحث عن المثيل
+//   EQUIVALENT
 // =============================================
 function searchEquivalent() {
-  const query = document.getElementById('equivInput').value.trim().toLowerCase();
-  const sourceEl = document.getElementById('equivSource');
-  const resultsEl = document.getElementById('equivResults');
+  const q = document.getElementById('equivInput').value.trim().toLowerCase();
+  const src = document.getElementById('equivSource');
+  const res = document.getElementById('equivResults');
 
-  if (!query) {
-    sourceEl.style.display = 'none';
-    resultsEl.innerHTML = '';
-    return;
-  }
+  if (!q) { src.innerHTML = ''; res.innerHTML = ''; return; }
 
-  // ابحث عن الدواء الأصلي
-  const source = allMedicines.find(m =>
-    (m.trade_name || '').toLowerCase().includes(query)
-  );
-
+  const source = allMedicines.find(m => (m.trade_name || '').toLowerCase().includes(q));
   if (!source || !source.active_ingredient) {
-    sourceEl.style.display = 'none';
-    resultsEl.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-icon">💊</div>
-        <h3>لا توجد نتائج</h3>
-        <p>تأكد من كتابة اسم الدواء بشكل صحيح</p>
-      </div>`;
+    src.innerHTML = '';
+    res.innerHTML = `<div class="empty-state"><div class="es-emoji">💊</div><h3>لا توجد نتائج</h3><p>تأكد من كتابة اسم الدواء بشكل صحيح</p></div>`;
     return;
   }
 
-  // البحث عن المثائل بنفس المادة الفعالة
   const equivalents = allMedicines.filter(m =>
     m.active_ingredient &&
     m.active_ingredient.toLowerCase() === source.active_ingredient.toLowerCase() &&
     m.trade_name !== source.trade_name
   );
 
-  sourceEl.style.display = 'block';
-  sourceEl.innerHTML = `
-    <h3>المادة الفعالة للدواء المختار</h3>
-    <div class="equiv-ingredient">🧬 ${source.active_ingredient}</div>
-    <div class="equiv-count">وُجد ${equivalents.length} مثيل في السوق المصري</div>
-  `;
+  src.innerHTML = `
+    <div class="equiv-source-card">
+      <div class="es-label">المادة الفعالة</div>
+      <div class="es-ing">🧬 ${source.active_ingredient}</div>
+      <div class="es-count">${equivalents.length} مثيل موجود في السوق</div>
+    </div>`;
 
-  resultsEl.innerHTML = '';
-  if (equivalents.length === 0) {
-    resultsEl.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-icon">🔍</div>
-        <h3>لا يوجد مثيل مسجل</h3>
-        <p>هذا الدواء ليس له مثيل في قاعدة البيانات</p>
-      </div>`;
+  res.innerHTML = '';
+  if (!equivalents.length) {
+    res.innerHTML = `<div class="empty-state"><div class="es-emoji">🔍</div><h3>لا يوجد مثيل</h3><p>هذا الدواء ليس له مثيل في قاعدة البيانات</p></div>`;
   } else {
-    equivalents.forEach(med => resultsEl.appendChild(createMedCard(med)));
+    equivalents.forEach(m => res.appendChild(createMedCard(m)));
   }
 }
 
 // =============================================
-//   التعارضات — Autocomplete
+//   SUGGEST
 // =============================================
-function suggestDrug(inputId, suggestId) {
-  const query = document.getElementById(inputId).value.trim().toLowerCase();
-  const box = document.getElementById(suggestId);
+function suggestDrug(inputId, dropId) {
+  const q = document.getElementById(inputId).value.trim().toLowerCase();
+  const drop = document.getElementById(dropId);
+  if (q.length < 2) { drop.innerHTML = ''; return; }
 
-  if (query.length < 2) { box.innerHTML = ''; return; }
+  const matches = allMedicines.filter(m => (m.trade_name || '').toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { drop.innerHTML = ''; return; }
 
-  const matches = allMedicines
-    .filter(m => (m.trade_name || '').toLowerCase().includes(query))
-    .slice(0, 8);
-
-  if (matches.length === 0) { box.innerHTML = ''; return; }
-
-  box.innerHTML = matches.map(m => `
-    <div class="suggest-item" onclick="selectDrug('${inputId}','${suggestId}','${(m.trade_name||'').replace(/'/g,"\\'")}')">
-      <div class="si-name">${m.trade_name}</div>
-      <div class="si-ing">${m.active_ingredient || ''}</div>
+  drop.innerHTML = matches.map(m => `
+    <div class="sug-item" onclick="selectSug('${inputId}','${dropId}','${(m.trade_name||'').replace(/'/g,"\\'")}')">
+      <div class="sug-name">${m.trade_name}</div>
+      ${m.active_ingredient ? `<div class="sug-ing">${m.active_ingredient}</div>` : ''}
     </div>
   `).join('');
 }
 
-function selectDrug(inputId, suggestId, name) {
+function selectSug(inputId, dropId, name) {
   document.getElementById(inputId).value = name;
-  document.getElementById(suggestId).innerHTML = '';
+  document.getElementById(dropId).innerHTML = '';
 }
 
 // =============================================
-//   فحص التعارض الدوائي عبر Claude AI
+//   INTERACTIONS
 // =============================================
 async function checkInteraction() {
-  const drug1 = document.getElementById('drug1Input').value.trim();
-  const drug2 = document.getElementById('drug2Input').value.trim();
-  const resultEl = document.getElementById('interactionResult');
+  const d1 = document.getElementById('drug1Input').value.trim();
+  const d2 = document.getElementById('drug2Input').value.trim();
+  const el = document.getElementById('interactionResult');
 
-  if (!drug1 || !drug2) {
-    resultEl.innerHTML = `<div class="result-card result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدوائين</p></div>`;
+  if (!d1 || !d2) {
+    el.innerHTML = `<div class="result-box result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدوائين</p></div>`;
     return;
   }
 
-  // إيجاد المادة الفعالة لكل دواء
-  const med1 = allMedicines.find(m => (m.trade_name||'').toLowerCase() === drug1.toLowerCase());
-  const med2 = allMedicines.find(m => (m.trade_name||'').toLowerCase() === drug2.toLowerCase());
+  const m1 = allMedicines.find(m => (m.trade_name||'').toLowerCase() === d1.toLowerCase());
+  const m2 = allMedicines.find(m => (m.trade_name||'').toLowerCase() === d2.toLowerCase());
+  const i1 = m1?.active_ingredient || d1;
+  const i2 = m2?.active_ingredient || d2;
 
-  const ing1 = med1?.active_ingredient || drug1;
-  const ing2 = med2?.active_ingredient || drug2;
-
-  resultEl.innerHTML = `
-    <div class="result-card result-info">
-      <div style="display:flex;gap:8px;align-items:center">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <span>جاري التحليل...</span>
-      </div>
-    </div>`;
+  el.innerHTML = `<div class="result-box result-info"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
 
   const prompt = `أنت صيدلاني متخصص. افحص التعارض الدوائي بين:
-الدواء الأول: ${drug1} (المادة الفعالة: ${ing1})
-الدواء الثاني: ${drug2} (المادة الفعالة: ${ing2})
-
-أجب باللغة العربية بالتنسيق التالي:
+الدواء الأول: ${d1} (المادة الفعالة: ${i1})
+الدواء الثاني: ${d2} (المادة الفعالة: ${i2})
+أجب باللغة العربية:
 1. مستوى التعارض: (آمن / تحذير / خطر)
-2. نوع التعارض (إن وجد)
+2. نوع التعارض إن وجد
 3. التأثيرات المحتملة
 4. التوصية للصيدلاني
-كن دقيقاً ومختصراً.`;
+كن مختصراً ودقيقاً.`;
 
-  const response = await callClaude(prompt);
-  displayInteractionResult(resultEl, response, drug1, drug2);
+  const res = await callClaude(prompt);
+  let cls = 'result-info';
+  if (res.includes('خطر') || res.includes('ممنوع')) cls = 'result-danger';
+  else if (res.includes('تحذير') || res.includes('احتياط')) cls = 'result-warning';
+  else if (res.includes('آمن')) cls = 'result-safe';
+
+  el.innerHTML = `<div class="result-box ${cls}"><h3>${d1} + ${d2}</h3><p>${res.replace(/\n/g,'<br/>')}</p></div>`;
 }
 
 async function checkPregnancy() {
   const drug = document.getElementById('pregInput').value.trim();
-  const resultEl = document.getElementById('pregnancyResult');
+  const el = document.getElementById('pregnancyResult');
 
   if (!drug) {
-    resultEl.innerHTML = `<div class="result-card result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدواء</p></div>`;
+    el.innerHTML = `<div class="result-box result-warning"><h3>⚠️ تنبيه</h3><p>من فضلك أدخل اسم الدواء</p></div>`;
     return;
   }
 
   const med = allMedicines.find(m => (m.trade_name||'').toLowerCase().includes(drug.toLowerCase()));
   const ing = med?.active_ingredient || drug;
 
-  resultEl.innerHTML = `
-    <div class="result-card result-info">
-      <div style="display:flex;gap:8px;align-items:center">
-        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        <span>جاري التحليل...</span>
-      </div>
-    </div>`;
+  el.innerHTML = `<div class="result-box result-info"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
 
-  const prompt = `أنت صيدلاني متخصص. اشرح أمان استخدام دواء ${drug} (المادة الفعالة: ${ing}) في:
-1. الحمل (اذكر تصنيف FDA إن وجد)
+  const prompt = `أنت صيدلاني متخصص. اشرح أمان دواء ${drug} (المادة الفعالة: ${ing}) في:
+1. الحمل (تصنيف FDA إن وجد)
 2. الرضاعة الطبيعية
 3. توصيات للصيدلاني
-
 أجب باللغة العربية باختصار ودقة.`;
 
-  const response = await callClaude(prompt);
-  resultEl.innerHTML = `<div class="result-card result-info"><h3>💊 ${drug}</h3><p>${response.replace(/\n/g,'<br/>')}</p></div>`;
-}
-
-function displayInteractionResult(el, text, drug1, drug2) {
-  let cls = 'result-info';
-  if (text.includes('خطر') || text.includes('خطير') || text.includes('ممنوع')) cls = 'result-danger';
-  else if (text.includes('تحذير') || text.includes('حذر') || text.includes('احتياط')) cls = 'result-warning';
-  else if (text.includes('آمن') || text.includes('مأمون')) cls = 'result-safe';
-
-  el.innerHTML = `
-    <div class="result-card ${cls}">
-      <h3>نتيجة فحص التعارض: ${drug1} + ${drug2}</h3>
-      <p>${text.replace(/\n/g,'<br/>')}</p>
-    </div>`;
+  const res = await callClaude(prompt);
+  el.innerHTML = `<div class="result-box result-info"><h3>💊 ${drug}</h3><p>${res.replace(/\n/g,'<br/>')}</p></div>`;
 }
 
 // =============================================
-//   المساعد الذكي (Chat)
+//   AI CHAT
 // =============================================
 async function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
   if (!msg || isLoading) return;
-
   input.value = '';
-  addChatMsg(msg, 'user');
 
+  addBubble(msg, 'user');
   isLoading = true;
-  const loadingId = addLoadingMsg();
+  const loadId = addTyping();
 
-  // ابحث في الداتابيز إذا السؤال عن دواء معين
   const relevantMeds = allMedicines
-    .filter(m => msg.split(' ').some(word =>
-      word.length > 2 && (m.trade_name||'').toLowerCase().includes(word.toLowerCase())
-    ))
+    .filter(m => msg.split(' ').some(w => w.length > 2 && (m.trade_name||'').toLowerCase().includes(w.toLowerCase())))
     .slice(0, 5);
 
-  const dbContext = relevantMeds.length > 0
-    ? `\nأدوية موجودة في قاعدة بيانات السوق المصري ذات صلة:\n${relevantMeds.map(m =>
-        `- ${m.trade_name} (${m.active_ingredient || 'غير محدد'}) - سعر: ${m.price} ج - شركة: ${m.manufacturer}`
-      ).join('\n')}`
+  const dbCtx = relevantMeds.length
+    ? `\nأدوية ذات صلة في السوق المصري:\n${relevantMeds.map(m => `- ${m.trade_name} (${m.active_ingredient||'—'}) — ${m.price} ج — ${m.manufacturer}`).join('\n')}`
     : '';
 
-  const systemPrompt = `أنت مساعد صيدلاني ذكي متخصص في أدوية السوق المصري. تتحدث باللغة العربية العامية المصرية بشكل ودود ومهني. لديك قاعدة بيانات لـ ${allMedicines.length} دواء في السوق المصري.${dbContext}
+  const system = `أنت مساعد صيدلاني ذكي متخصص في أدوية السوق المصري. تتكلم بالعربية بأسلوب ودود ومهني. لديك قاعدة بيانات ${allMedicines.length} دواء.${dbCtx}`;
 
-ساعد الصيدلاني في: البحث عن الأدوية، المثائل، التعارضات الدوائية، الجرعات، آليات العمل، والمعلومات الطبية. كن مختصراً ومفيداً.`;
-
-  const response = await callClaude(msg, systemPrompt);
-  removeLoadingMsg(loadingId);
-  addChatMsg(response, 'bot');
+  const res = await callClaude(msg, system);
+  removeTyping(loadId);
+  addBubble(res, 'bot');
   isLoading = false;
 }
 
-function addChatMsg(text, type) {
-  const messages = document.getElementById('chatMessages');
+function addBubble(text, type) {
+  const msgs = document.getElementById('chatMessages');
   const div = document.createElement('div');
-  div.className = `chat-msg ${type}`;
+  div.className = `chat-row ${type}`;
   div.innerHTML = `
-    <div class="msg-avatar">${type === 'bot' ? '⚕' : '👨‍⚕️'}</div>
-    <div class="msg-bubble">${text.replace(/\n/g,'<br/>')}</div>
+    <div class="chat-avatar">${type === 'bot' ? '⚕️' : '👨‍⚕️'}</div>
+    <div class="chat-bubble">${text.replace(/\n/g,'<br/>')}</div>
   `;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-  return div.id;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function addLoadingMsg() {
-  const messages = document.getElementById('chatMessages');
-  const id = 'loading-' + Date.now();
+function addTyping() {
+  const id = 'typing-' + Date.now();
+  const msgs = document.getElementById('chatMessages');
   const div = document.createElement('div');
-  div.className = 'chat-msg bot msg-loading';
+  div.className = 'chat-row bot';
   div.id = id;
   div.innerHTML = `
-    <div class="msg-avatar">⚕</div>
-    <div class="msg-bubble">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    </div>
+    <div class="chat-avatar">⚕️</div>
+    <div class="chat-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
   `;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
   return id;
 }
 
-function removeLoadingMsg(id) {
+function removeTyping(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
 // =============================================
-//   استدعاء Claude API
+//   CLAUDE API
 // =============================================
-async function callClaude(userMessage, systemPrompt = null) {
+async function callClaude(userMsg, system = null) {
   if (CLAUDE_API_KEY === "YOUR_CLAUDE_API_KEY_HERE") {
-    return "⚠️ لم يتم إعداد Claude API Key بعد. افتح ملف app.js وضع الـ API Key في المكان المخصص.";
+    return "⚠️ لم يتم إعداد Claude API Key بعد. افتح ملف app.js وضع الـ API Key في المتغير CLAUDE_API_KEY.";
   }
-
   try {
-    const body = {
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: userMessage }]
-    };
-
-    if (systemPrompt) body.system = systemPrompt;
-
+    const body = { model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: userMsg }] };
+    if (system) body.system = system;
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -438,84 +359,102 @@ async function callClaude(userMessage, systemPrompt = null) {
       },
       body: JSON.stringify(body)
     });
-
     const data = await res.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return "حدث خطأ في الاتصال بالذكاء الاصطناعي.";
-  } catch (err) {
-    return "تعذر الاتصال. تحقق من الاتصال بالإنترنت.";
+    return data.content?.[0]?.text || "حدث خطأ.";
+  } catch {
+    return "تعذر الاتصال. تحقق من الإنترنت.";
   }
 }
 
 // =============================================
-//   Modal
+//   BOTTOM SHEET
 // =============================================
-function openModal(med) {
-  const price = med.price ? `${parseFloat(med.price).toFixed(2)} جنيه` : 'غير محدد';
-  document.getElementById('modalContent').innerHTML = `
-    <div class="modal-med-name">${med.trade_name}</div>
-    <div class="modal-med-ingredient">🧬 ${med.active_ingredient || 'غير محدد'}</div>
-    <div class="modal-details">
-      <div class="detail-item">
-        <div class="detail-label">السعر</div>
-        <div class="detail-value price">${price}</div>
+function openSheet(med) {
+  const price = med.price ? `${parseFloat(med.price).toFixed(2)} جنيه` : '—';
+  document.getElementById('sheetContent').innerHTML = `
+    <div class="sheet-name">${med.trade_name || ''}</div>
+    <div class="sheet-ing">🧬 ${med.active_ingredient || 'غير محدد'}</div>
+    <div class="sheet-grid">
+      <div class="sheet-info-item">
+        <div class="sii-label">السعر</div>
+        <div class="sii-value price">${price}</div>
       </div>
-      <div class="detail-item">
-        <div class="detail-label">كود الدواء</div>
-        <div class="detail-value">${med.drug_code || '-'}</div>
+      <div class="sheet-info-item">
+        <div class="sii-label">الكود</div>
+        <div class="sii-value">${med.drug_code || '—'}</div>
       </div>
-      <div class="detail-item">
-        <div class="detail-label">الشركة المصنعة</div>
-        <div class="detail-value">${med.manufacturer || '-'}</div>
+      <div class="sheet-info-item">
+        <div class="sii-label">الشركة</div>
+        <div class="sii-value" style="font-size:13px">${med.manufacturer || '—'}</div>
       </div>
-      <div class="detail-item">
-        <div class="detail-label">المجموعة الطبية</div>
-        <div class="detail-value">${med.medical_group || '-'}</div>
+      <div class="sheet-info-item">
+        <div class="sii-label">المجموعة</div>
+        <div class="sii-value" style="font-size:12px">${med.medical_group || '—'}</div>
       </div>
     </div>
-    <button class="modal-equiv-btn" onclick="findEquivFromModal('${(med.trade_name||'').replace(/'/g,"\\'")}')">
-      💊 ابحث عن المثيل
-    </button>
+    <button class="sheet-equiv-btn" onclick="findEquiv('${(med.trade_name||'').replace(/'/g,"\\'")}')">💊 ابحث عن المثيل</button>
   `;
-  document.getElementById('medModal').classList.add('open');
+  document.getElementById('sheetBg').classList.add('show');
+  document.getElementById('bottomSheet').classList.add('open');
 }
 
-function closeModal(e) {
-  if (e.target.id === 'medModal') document.getElementById('medModal').classList.remove('open');
+function closeSheet() {
+  document.getElementById('sheetBg').classList.remove('show');
+  document.getElementById('bottomSheet').classList.remove('open');
 }
 
-function findEquivFromModal(name) {
-  document.getElementById('medModal').classList.remove('open');
+function findEquiv(name) {
+  closeSheet();
   document.getElementById('equivInput').value = name;
-  showPage('equivalent');
-  searchEquivalent();
+  showPage('equivalent', document.querySelector('[data-page="equivalent"]'));
+  setTimeout(searchEquivalent, 100);
 }
 
 // =============================================
-//   Navigation
+//   NAVIGATION
 // =============================================
-function showPage(page) {
+function showPage(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  const btns = document.querySelectorAll('.nav-btn');
-  const pageIndex = ['search','equivalent','interactions','ai'];
-  const idx = pageIndex.indexOf(page);
-  if (btns[idx]) btns[idx].classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`[data-page="${page}"]`).forEach(n => n.classList.add('active'));
+
+  const title = pageTitles[page] || '';
+  const titleEl = document.getElementById('pageTitle');
+  if (titleEl) titleEl.textContent = title;
+
+  if (window.innerWidth <= 768) closeSidebar();
 }
 
-function toggleMenu() {
-  document.getElementById('mobileMenu').classList.toggle('open');
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
 }
 
-function switchITab(tab) {
-  document.querySelectorAll('.itab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.itab-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('itab-' + tab).classList.add('active');
-  event.target.classList.add('active');
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
 }
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// Close suggestions when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.drug-inp-wrap') && !e.target.closest('.search-input-group')) {
+    document.querySelectorAll('.suggest-drop').forEach(d => d.innerHTML = '');
+  }
+});
 
 // =============================================
-//   تشغيل التطبيق
+//   INIT
 // =============================================
 loadAllMedicines();
