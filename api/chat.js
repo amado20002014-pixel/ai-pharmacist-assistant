@@ -2,12 +2,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
   try {
     const { messages, system } = req.body;
-    const apiKey = process.env.CLAUDE_API_KEY || "sk-ant-api03-tOMM7MSprlU2zYTpT1uvcv0ECNCABb8gM_juv2NW74vBwE5muna-qNsyDdZQtzWtUOUUeVMLiohKBOzRGV8jPA-RC5OGgAA";
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
+        "x-api-key": "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",
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
