@@ -522,19 +522,11 @@ async function callClaude(userMsg, system = null) {
     return "⚠️ لم يتم إعداد Claude API Key بعد. افتح ملف app.js وضع الـ API Key في المتغير CLAUDE_API_KEY.";
   }
   try {
-    const body = { model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: userMsg }] };
-    if (system) body.system = system;
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": CLAUDE_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
+    const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ messages: [{ role: "user", content: userMsg }], system: system || "" })
+});
     return data.content?.[0]?.text || "حدث خطأ.";
   } catch {
     return "تعذر الاتصال. تحقق من الإنترنت.";
