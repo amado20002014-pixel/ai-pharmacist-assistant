@@ -1,13 +1,118 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Pharmacist Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Pharmacist Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+
+<!-- ===================== AUTH SCREENS ===================== -->
+<div id="authScreen" class="auth-screen">
+
+  <!-- LOGIN -->
+  <div id="loginPage" class="auth-page active">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="url(#auth-grad)"/>
+          <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+          <defs><linearGradient id="auth-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+        </svg>
+      </div>
+      <h1 class="auth-title">AI Pharmacist Assistant</h1>
+      <p class="auth-sub">سجّل دخولك للمتابعة</p>
+
+      <div id="loginError" class="auth-error" style="display:none"></div>
+
+      <div class="auth-field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label>كلمة المرور</label>
+        <div class="pass-wrap">
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <button class="pass-toggle" onclick="togglePass('loginPassword',this)">👁</button>
+        </div>
+      </div>
+
+      <button class="auth-btn" onclick="doLogin()" id="loginBtn">تسجيل الدخول</button>
+
+      <div class="auth-divider"><span>أو</span></div>
+
+      <p class="auth-switch">مش عندك حساب؟ <button onclick="showAuthPage('signupPage')">إنشاء حساب جديد</button></p>
+    </div>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="signupPage" class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="url(#auth-grad2)"/>
+          <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+          <defs><linearGradient id="auth-grad2" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+        </svg>
+      </div>
+      <h1 class="auth-title">إنشاء حساب جديد</h1>
+      <p class="auth-sub">أنشئ حسابك كصيدلاني</p>
+
+      <div id="signupError" class="auth-error" style="display:none"></div>
+      <div id="signupSuccess" class="auth-success" style="display:none"></div>
+
+      <div class="auth-field">
+        <label>الاسم الكامل</label>
+        <input type="text" id="signupName" placeholder="اسمك بالكامل"/>
+      </div>
+      <div class="auth-field">
+        <label>رقم الموبايل</label>
+        <div class="phone-wrap">
+          <span class="phone-code">+20</span>
+          <input type="tel" id="signupPhone" placeholder="01xxxxxxxxx" maxlength="11"/>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="signupEmail" placeholder="example@email.com"/>
+      </div>
+      <div class="auth-field">
+        <label>كلمة المرور</label>
+        <div class="pass-wrap">
+          <input type="password" id="signupPassword" placeholder="٨ أحرف على الأقل"/>
+          <button class="pass-toggle" onclick="togglePass('signupPassword',this)">👁</button>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>تأكيد كلمة المرور</label>
+        <div class="pass-wrap">
+          <input type="password" id="signupConfirm" placeholder="••••••••" onkeydown="if(event.key==='Enter')doSignup()"/>
+          <button class="pass-toggle" onclick="togglePass('signupConfirm',this)">👁</button>
+        </div>
+      </div>
+
+      <button class="auth-btn" onclick="doSignup()" id="signupBtn">إنشاء الحساب</button>
+
+      <p class="auth-switch">عندك حساب؟ <button onclick="showAuthPage('loginPage')">تسجيل الدخول</button></p>
+    </div>
+  </div>
+
+  <!-- VERIFY EMAIL -->
+  <div id="verifyPage" class="auth-page">
+    <div class="auth-card" style="text-align:center">
+      <div style="font-size:64px;margin-bottom:16px">📧</div>
+      <h1 class="auth-title">تحقق من إيميلك</h1>
+      <p class="auth-sub" id="verifyMsg">بعتنالك رابط تأكيد على إيميلك — افتحه عشان تكمّل التسجيل</p>
+      <button class="auth-btn" style="margin-top:24px" onclick="showAuthPage('loginPage')">رجوع لتسجيل الدخول</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="appScreen" style="display:none">
 
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
@@ -16,12 +121,7 @@
         <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
           <rect width="28" height="28" rx="8" fill="url(#brand-grad)"/>
           <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-          <defs>
-            <linearGradient id="brand-grad" x1="0" y1="0" x2="28" y2="28">
-              <stop stop-color="#22C55E"/>
-              <stop offset="1" stop-color="#15803D"/>
-            </linearGradient>
-          </defs>
+          <defs><linearGradient id="brand-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
         </svg>
       </div>
       <div>
@@ -33,30 +133,32 @@
     <div class="nav-section-label">القائمة</div>
     <nav class="sidebar-nav">
       <button class="nav-item active" data-page="search" onclick="showPage('search',this)">
-        <span class="nav-icon">🔍</span>
-        <span>البحث عن دواء</span>
-        <span class="nav-arrow">›</span>
+        <span class="nav-icon">🔍</span><span>البحث عن دواء</span><span class="nav-arrow">›</span>
       </button>
       <button class="nav-item" data-page="equivalent" onclick="showPage('equivalent',this)">
-        <span class="nav-icon">💊</span>
-        <span>البحث عن مثيل</span>
-        <span class="nav-arrow">›</span>
+        <span class="nav-icon">💊</span><span>البحث عن مثيل</span><span class="nav-arrow">›</span>
       </button>
       <button class="nav-item" data-page="interactions" onclick="showPage('interactions',this)">
-        <span class="nav-icon">⚠️</span>
-        <span>التعارضات الدوائية</span>
-        <span class="nav-arrow">›</span>
+        <span class="nav-icon">⚠️</span><span>التعارضات الدوائية</span><span class="nav-arrow">›</span>
       </button>
       <button class="nav-item" data-page="ai" onclick="showPage('ai',this)">
-        <span class="nav-icon">🤖</span>
-        <span>المساعد الذكي</span>
-        <span class="nav-arrow">›</span>
+        <span class="nav-icon">🤖</span><span>المساعد الذكي</span><span class="nav-arrow">›</span>
       </button>
     </nav>
 
     <div class="sidebar-status">
       <div class="status-dot"></div>
       <span id="dbCount">جاري التحميل...</span>
+    </div>
+
+    <!-- User Info + Logout -->
+    <div class="sidebar-user" id="sidebarUser">
+      <div class="user-avatar" id="userAvatar">ص</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">...</div>
+        <div class="user-phone" id="userPhone">...</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="تسجيل الخروج">⏻</button>
     </div>
   </aside>
 
@@ -73,21 +175,19 @@
       </svg>
       <span id="pageTitle">البحث عن دواء</span>
     </div>
-    <div style="width:40px"></div>
+    <button class="mobile-logout" onclick="doLogout()">⏻</button>
   </header>
 
   <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
   <!-- Content -->
   <main class="main">
-
     <!-- SEARCH -->
     <section id="page-search" class="page active">
       <div class="page-top">
         <h1>البحث عن دواء 🔍</h1>
         <p>ابحث في أكثر من ١٤,٠٠٠ دواء</p>
       </div>
-
       <div class="search-wrap">
         <div class="search-input-group">
           <span class="s-icon">🔍</span>
@@ -99,7 +199,6 @@
           <select id="companyFilter" onchange="searchMedicines()"><option value="">كل الشركات</option></select>
         </div>
       </div>
-
       <div id="searchStats" class="result-count"></div>
       <div id="searchResults" class="cards-list"></div>
       <div id="loadMore" class="load-more-btn" style="display:none">
@@ -129,12 +228,10 @@
         <h1>التعارضات ⚠️</h1>
         <p>فحص التعارض مع الأدوية والحمل والرضاعة</p>
       </div>
-
       <div class="pill-tabs">
         <button class="pill active" onclick="switchTab('drug-drug',this)">💊 دواء مع دواء</button>
         <button class="pill" onclick="switchTab('pregnancy',this)">🤰 حمل ورضاعة</button>
       </div>
-
       <div id="tab-drug-drug" class="tab-panel active">
         <div class="interact-box">
           <div class="two-drugs">
@@ -154,7 +251,6 @@
         </div>
         <div id="interactionResult"></div>
       </div>
-
       <div id="tab-pregnancy" class="tab-panel">
         <div class="interact-box">
           <div class="drug-inp-wrap" style="margin-bottom:16px">
@@ -191,10 +287,9 @@
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- Bottom Sheet for medicine details -->
+  <!-- Bottom Sheet -->
   <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
   <div class="bottom-sheet" id="bottomSheet">
     <div class="sheet-pill"></div>
@@ -204,23 +299,21 @@
   <!-- Mobile Bottom Nav -->
   <nav class="bottom-nav">
     <button class="bn-item active" data-page="search" onclick="showPage('search',this)">
-      <span class="bn-icon">🔍</span>
-      <span class="bn-label">بحث</span>
+      <span class="bn-icon">🔍</span><span class="bn-label">بحث</span>
     </button>
     <button class="bn-item" data-page="equivalent" onclick="showPage('equivalent',this)">
-      <span class="bn-icon">💊</span>
-      <span class="bn-label">مثيل</span>
+      <span class="bn-icon">💊</span><span class="bn-label">مثيل</span>
     </button>
     <button class="bn-item" data-page="interactions" onclick="showPage('interactions',this)">
-      <span class="bn-icon">⚠️</span>
-      <span class="bn-label">تعارضات</span>
+      <span class="bn-icon">⚠️</span><span class="bn-label">تعارضات</span>
     </button>
     <button class="bn-item" data-page="ai" onclick="showPage('ai',this)">
-      <span class="bn-icon">🤖</span>
-      <span class="bn-label">مساعد</span>
+      <span class="bn-icon">🤖</span><span class="bn-label">مساعد</span>
     </button>
   </nav>
 
-  <script src="app.js"></script>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
