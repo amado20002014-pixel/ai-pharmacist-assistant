@@ -9,60 +9,48 @@
 </head>
 <body>
 
-<!-- ===================== AUTH SCREENS ===================== -->
+<!-- ==================== AUTH ==================== -->
 <div id="authScreen" class="auth-screen">
-
-  <!-- LOGIN -->
   <div id="loginPage" class="auth-page active">
     <div class="auth-card">
       <div class="auth-logo">
         <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
-          <rect width="28" height="28" rx="8" fill="url(#auth-grad)"/>
+          <rect width="28" height="28" rx="8" fill="url(#ag1)"/>
           <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-          <defs><linearGradient id="auth-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+          <defs><linearGradient id="ag1" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
         </svg>
       </div>
       <h1 class="auth-title">AI Pharmacist Assistant</h1>
       <p class="auth-sub">سجّل دخولك للمتابعة</p>
-
       <div id="loginError" class="auth-error" style="display:none"></div>
-
       <div class="auth-field">
         <label>البريد الإلكتروني</label>
-        <input type="email" id="loginEmail" placeholder="example@email.com" autocomplete="email"/>
+        <input type="email" id="loginEmail" placeholder="example@email.com"/>
       </div>
       <div class="auth-field">
         <label>كلمة المرور</label>
         <div class="pass-wrap">
-          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+          <input type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
           <button class="pass-toggle" onclick="togglePass('loginPassword',this)">👁</button>
         </div>
       </div>
-
       <button class="auth-btn" onclick="doLogin()" id="loginBtn">تسجيل الدخول</button>
-
-      <div class="auth-divider"><span>أو</span></div>
-
       <p class="auth-switch">مش عندك حساب؟ <button onclick="showAuthPage('signupPage')">إنشاء حساب جديد</button></p>
     </div>
   </div>
 
-  <!-- SIGNUP -->
   <div id="signupPage" class="auth-page">
     <div class="auth-card">
       <div class="auth-logo">
         <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
-          <rect width="28" height="28" rx="8" fill="url(#auth-grad2)"/>
+          <rect width="28" height="28" rx="8" fill="url(#ag2)"/>
           <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-          <defs><linearGradient id="auth-grad2" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+          <defs><linearGradient id="ag2" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
         </svg>
       </div>
       <h1 class="auth-title">إنشاء حساب جديد</h1>
       <p class="auth-sub">أنشئ حسابك كصيدلاني</p>
-
       <div id="signupError" class="auth-error" style="display:none"></div>
-      <div id="signupSuccess" class="auth-success" style="display:none"></div>
-
       <div class="auth-field">
         <label>الاسم الكامل</label>
         <input type="text" id="signupName" placeholder="اسمك بالكامل"/>
@@ -92,225 +80,243 @@
           <button class="pass-toggle" onclick="togglePass('signupConfirm',this)">👁</button>
         </div>
       </div>
-
       <button class="auth-btn" onclick="doSignup()" id="signupBtn">إنشاء الحساب</button>
-
       <p class="auth-switch">عندك حساب؟ <button onclick="showAuthPage('loginPage')">تسجيل الدخول</button></p>
     </div>
   </div>
 
-  <!-- VERIFY EMAIL -->
   <div id="verifyPage" class="auth-page">
     <div class="auth-card" style="text-align:center">
       <div style="font-size:64px;margin-bottom:16px">📧</div>
       <h1 class="auth-title">تحقق من إيميلك</h1>
-      <p class="auth-sub" id="verifyMsg">بعتنالك رابط تأكيد على إيميلك — افتحه عشان تكمّل التسجيل</p>
+      <p class="auth-sub" id="verifyMsg">بعتنالك رابط تأكيد — افتحه عشان تكمّل التسجيل</p>
       <button class="auth-btn" style="margin-top:24px" onclick="showAuthPage('loginPage')">رجوع لتسجيل الدخول</button>
     </div>
   </div>
-
 </div>
 
-<!-- ===================== MAIN APP ===================== -->
+<!-- ==================== APP ==================== -->
 <div id="appScreen" style="display:none">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">
-        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-          <rect width="28" height="28" rx="8" fill="url(#brand-grad)"/>
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <button class="tb-back" id="tbBack" onclick="goHome()" style="display:none">&#8250;</button>
+    <div class="tb-title" id="tbTitle">
+      <div class="tb-logo">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="7" fill="url(#tbg)"/>
           <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-          <defs><linearGradient id="brand-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
+          <defs><linearGradient id="tbg" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
         </svg>
       </div>
-      <div>
-        <div class="brand-name">AI Pharmacist Assistant</div>
-        <div class="brand-sub">السوق المصري</div>
-      </div>
+      <span>AI Pharmacist</span>
     </div>
-
-    <div class="nav-section-label">القائمة</div>
-    <nav class="sidebar-nav">
-      <button class="nav-item active" data-page="search" onclick="showPage('search',this)">
-        <span class="nav-icon">🔍</span><span>البحث عن دواء</span><span class="nav-arrow">›</span>
-      </button>
-      <button class="nav-item" data-page="equivalent" onclick="showPage('equivalent',this)">
-        <span class="nav-icon">💊</span><span>البحث عن مثيل</span><span class="nav-arrow">›</span>
-      </button>
-      <button class="nav-item" data-page="interactions" onclick="showPage('interactions',this)">
-        <span class="nav-icon">⚠️</span><span>التعارضات الدوائية</span><span class="nav-arrow">›</span>
-      </button>
-      <button class="nav-item" data-page="ai" onclick="showPage('ai',this)">
-        <span class="nav-icon">🤖</span><span>المساعد الذكي</span><span class="nav-arrow">›</span>
-      </button>
-    </nav>
-
-    <div class="sidebar-status">
-      <div class="status-dot"></div>
-      <span id="dbCount">جاري التحميل...</span>
+    <div class="tb-user">
+      <div class="tb-avatar" id="tbAvatar">ص</div>
+      <button class="tb-logout" onclick="doLogout()">خروج</button>
     </div>
-
-    <!-- User Info + Logout -->
-    <div class="sidebar-user" id="sidebarUser">
-      <div class="user-avatar" id="userAvatar">ص</div>
-      <div class="user-info">
-        <div class="user-name" id="userName">...</div>
-        <div class="user-phone" id="userPhone">...</div>
-      </div>
-      <button class="logout-btn" onclick="doLogout()" title="تسجيل الخروج">⏻</button>
-    </div>
-  </aside>
-
-  <!-- Mobile Header -->
-  <header class="mobile-header">
-    <button class="hamburger" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="mobile-brand">
-      <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
-        <rect width="28" height="28" rx="8" fill="url(#mb-grad)"/>
-        <path d="M14 7v14M7 14h14" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-        <defs><linearGradient id="mb-grad" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#22C55E"/><stop offset="1" stop-color="#15803D"/></linearGradient></defs>
-      </svg>
-      <span id="pageTitle">البحث عن دواء</span>
-    </div>
-<button class="mobile-logout" onclick="doLogout()">خروج</button>
   </header>
 
-  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="screen active">
+    <div class="home-greeting">
+      <p class="home-hello">أهلاً، <span id="greetName">صيدلاني</span> 👋</p>
+      <p class="home-sub">ماذا تريد اليوم؟</p>
+    </div>
+    <div class="home-grid">
+      <button class="home-card" onclick="openPage('search')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#22c55e,#15803d)">🔍</div>
+        <div class="hc-label">البحث عن أدوية</div>
+      </button>
+      <button class="home-card" onclick="openPage('equivalent')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">💊</div>
+        <div class="hc-label">البحث عن مثيل</div>
+      </button>
+      <button class="home-card" onclick="openPage('drugdrug')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#f59e0b,#b45309)">⚠️</div>
+        <div class="hc-label">تعارضات دوائية</div>
+      </button>
+      <button class="home-card" onclick="openPage('pregnancy')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#ec4899,#9d174d)">🤰</div>
+        <div class="hc-label">تعارضات الحمل</div>
+      </button>
+      <button class="home-card" onclick="openPage('breastfeeding')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6)">🤱</div>
+        <div class="hc-label">تعارضات الرضاعة</div>
+      </button>
+      <button class="home-card" onclick="openPage('moa')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#06b6d4,#0e7490)">⚙️</div>
+        <div class="hc-label">Mechanism of Action</div>
+      </button>
+      <button class="home-card" onclick="openPage('ai')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#10b981,#047857)">🤖</div>
+        <div class="hc-label">المساعد الذكي</div>
+      </button>
+      <button class="home-card" onclick="openPage('companies')">
+        <div class="hc-icon" style="background:linear-gradient(135deg,#f97316,#c2410c)">🏭</div>
+        <div class="hc-label">الشركات المنتجة</div>
+      </button>
+    </div>
+    <div class="home-stats">
+      <div class="hs-item">
+        <div class="hs-num" id="statDrugs">—</div>
+        <div class="hs-label">دواء</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num" id="statCompanies">—</div>
+        <div class="hs-label">شركة</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num" id="statGroups">—</div>
+        <div class="hs-label">مجموعة طبية</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Content -->
-  <main class="main">
-    <!-- SEARCH -->
-    <section id="page-search" class="page active">
-      <div class="page-top">
-        <h1>البحث عن دواء 🔍</h1>
-        <p>ابحث في أكثر من ١٤,٠٠٠ دواء</p>
+  <!-- SEARCH PAGE -->
+  <div id="page-search" class="screen">
+    <div class="page-top"><h1>البحث عن أدوية 🔍</h1><p>ابحث في أكثر من ١٤,٠٠٠ دواء</p></div>
+    <div class="search-wrap">
+      <div class="search-input-group">
+        <span class="s-icon">🔍</span>
+        <input id="searchInput" type="text" placeholder="اسم الدواء أو المادة الفعالة..." oninput="searchMedicines()" autocomplete="off"/>
+        <button class="s-clear" id="searchClear" onclick="clearSearch()" style="display:none">×</button>
       </div>
-      <div class="search-wrap">
-        <div class="search-input-group">
-          <span class="s-icon">🔍</span>
-          <input id="searchInput" type="text" placeholder="اسم الدواء أو المادة الفعالة..." oninput="searchMedicines()" autocomplete="off"/>
-          <button class="s-clear" id="searchClear" onclick="clearSearch()" style="display:none">×</button>
-        </div>
-        <div class="filter-chips">
-          <select id="groupFilter" onchange="searchMedicines()"><option value="">كل المجموعات</option></select>
-          <select id="companyFilter" onchange="searchMedicines()"><option value="">كل الشركات</option></select>
-        </div>
+      <div class="filter-chips">
+        <select id="groupFilter" onchange="searchMedicines()"><option value="">كل المجموعات</option></select>
+        <select id="companyFilter" onchange="searchMedicines()"><option value="">كل الشركات</option></select>
       </div>
-      <div id="searchStats" class="result-count"></div>
-      <div id="searchResults" class="cards-list"></div>
-      <div id="loadMore" class="load-more-btn" style="display:none">
-        <button onclick="loadMoreResults()">عرض المزيد</button>
-      </div>
-    </section>
+    </div>
+    <div id="searchStats" class="result-count"></div>
+    <div id="searchResults" class="cards-list"></div>
+    <div id="loadMore" class="load-more-btn" style="display:none"><button onclick="loadMoreResults()">عرض المزيد</button></div>
+  </div>
 
-    <!-- EQUIVALENT -->
-    <section id="page-equivalent" class="page">
-      <div class="page-top">
-        <h1>البحث عن مثيل 💊</h1>
-        <p>أدوية بنفس المادة الفعالة</p>
+  <!-- EQUIVALENT PAGE -->
+  <div id="page-equivalent" class="screen">
+    <div class="page-top"><h1>البحث عن مثيل 💊</h1><p>أدوية بنفس المادة الفعالة</p></div>
+    <div class="search-wrap">
+      <div class="search-input-group">
+        <span class="s-icon">💊</span>
+        <input id="equivInput" type="text" placeholder="اكتب اسم الدواء..." oninput="searchEquivalent()" autocomplete="off"/>
       </div>
-      <div class="search-wrap">
-        <div class="search-input-group">
-          <span class="s-icon">💊</span>
-          <input id="equivInput" type="text" placeholder="اكتب اسم الدواء..." oninput="searchEquivalent()" autocomplete="off"/>
-        </div>
-      </div>
-      <div id="equivSource"></div>
-      <div id="equivResults" class="cards-list"></div>
-    </section>
+    </div>
+    <div id="equivSource"></div>
+    <div id="equivResults" class="cards-list"></div>
+  </div>
 
-    <!-- INTERACTIONS -->
-    <section id="page-interactions" class="page">
-      <div class="page-top">
-        <h1>التعارضات ⚠️</h1>
-        <p>فحص التعارض مع الأدوية والحمل والرضاعة</p>
-      </div>
-      <div class="pill-tabs">
-        <button class="pill active" onclick="switchTab('drug-drug',this)">💊 دواء مع دواء</button>
-        <button class="pill" onclick="switchTab('pregnancy',this)">🤰 حمل ورضاعة</button>
-      </div>
-      <div id="tab-drug-drug" class="tab-panel active">
-        <div class="interact-box">
-          <div class="two-drugs">
-            <div class="drug-inp-wrap">
-              <label>الدواء الأول</label>
-              <input id="drug1Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug1Input','sug1')" autocomplete="off"/>
-              <div class="suggest-drop" id="sug1"></div>
-            </div>
-            <div class="vs-badge">VS</div>
-            <div class="drug-inp-wrap">
-              <label>الدواء الثاني</label>
-              <input id="drug2Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug2Input','sug2')" autocomplete="off"/>
-              <div class="suggest-drop" id="sug2"></div>
-            </div>
-          </div>
-          <button class="cta-btn" onclick="checkInteraction()">🔎 فحص التعارض</button>
+  <!-- DRUG-DRUG INTERACTIONS -->
+  <div id="page-drugdrug" class="screen">
+    <div class="page-top"><h1>تعارضات دوائية ⚠️</h1><p>فحص التعارض بين دوائين</p></div>
+    <div class="interact-box">
+      <div class="two-drugs">
+        <div class="drug-inp-wrap">
+          <label>الدواء الأول</label>
+          <input id="drug1Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug1Input','sug1')" autocomplete="off"/>
+          <div class="suggest-drop" id="sug1"></div>
         </div>
-        <div id="interactionResult"></div>
-      </div>
-      <div id="tab-pregnancy" class="tab-panel">
-        <div class="interact-box">
-          <div class="drug-inp-wrap" style="margin-bottom:16px">
-            <label>اسم الدواء</label>
-            <input id="pregInput" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('pregInput','pregSug')" autocomplete="off"/>
-            <div class="suggest-drop" id="pregSug"></div>
-          </div>
-          <button class="cta-btn" onclick="checkPregnancy()">🔎 فحص الأمان</button>
+        <div class="vs-badge">VS</div>
+        <div class="drug-inp-wrap">
+          <label>الدواء الثاني</label>
+          <input id="drug2Input" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('drug2Input','sug2')" autocomplete="off"/>
+          <div class="suggest-drop" id="sug2"></div>
         </div>
-        <div id="pregnancyResult"></div>
       </div>
-    </section>
+      <button class="cta-btn" onclick="checkInteraction()">🔎 فحص التعارض</button>
+    </div>
+    <div id="interactionResult"></div>
+  </div>
 
-    <!-- AI CHAT -->
-    <section id="page-ai" class="page">
-      <div class="page-top">
-        <h1>المساعد الذكي 🤖</h1>
-        <p>اسأل عن أي دواء أو حالة طبية</p>
+  <!-- PREGNANCY PAGE -->
+  <div id="page-pregnancy" class="screen">
+    <div class="page-top"><h1>تعارضات الحمل 🤰</h1><p>أمان الدواء أثناء الحمل وتصنيف FDA</p></div>
+    <div class="interact-box">
+      <div class="drug-inp-wrap" style="margin-bottom:16px">
+        <label>اسم الدواء</label>
+        <input id="pregInput" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('pregInput','pregSug')" autocomplete="off"/>
+        <div class="suggest-drop" id="pregSug"></div>
       </div>
-      <div class="chat-container">
-        <div class="chat-messages" id="chatMessages">
-          <div class="chat-row bot">
-            <div class="chat-avatar">⚕️</div>
-            <div class="chat-bubble">أهلاً! أنا مساعدك الدوائي 👋<br/>اسألني عن أي دواء، مثيل، تعارض، أو جرعة.</div>
-          </div>
-        </div>
-        <div class="chat-input-bar">
-          <input id="chatInput" type="text" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter')sendChat()"/>
-          <button class="chat-send" onclick="sendChat()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </section>
-  </main>
+      <button class="cta-btn" onclick="checkPregnancy()">🔎 فحص أمان الحمل</button>
+    </div>
+    <div id="pregnancyResult"></div>
+  </div>
 
-  <!-- Bottom Sheet -->
+  <!-- BREASTFEEDING PAGE -->
+  <div id="page-breastfeeding" class="screen">
+    <div class="page-top"><h1>تعارضات الرضاعة 🤱</h1><p>أمان الدواء أثناء الرضاعة الطبيعية</p></div>
+    <div class="interact-box">
+      <div class="drug-inp-wrap" style="margin-bottom:16px">
+        <label>اسم الدواء</label>
+        <input id="bfInput" type="text" placeholder="ابحث عن الدواء..." oninput="suggestDrug('bfInput','bfSug')" autocomplete="off"/>
+        <div class="suggest-drop" id="bfSug"></div>
+      </div>
+      <button class="cta-btn" onclick="checkBreastfeeding()">🔎 فحص أمان الرضاعة</button>
+    </div>
+    <div id="breastfeedingResult"></div>
+  </div>
+
+  <!-- MOA PAGE -->
+  <div id="page-moa" class="screen">
+    <div class="page-top"><h1>Mechanism of Action ⚙️</h1><p>آلية عمل الأدوية من قاعدة البيانات</p></div>
+    <div class="search-wrap">
+      <div class="search-input-group">
+        <span class="s-icon">⚙️</span>
+        <input id="moaInput" type="text" placeholder="ابحث عن دواء..." oninput="searchMOA()" autocomplete="off"/>
+      </div>
+    </div>
+    <div id="moaResults" class="cards-list"></div>
+  </div>
+
+  <!-- AI PAGE -->
+  <div id="page-ai" class="screen">
+    <div class="page-top"><h1>المساعد الذكي 🤖</h1><p>اسأل عن أي دواء أو حالة طبية</p></div>
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-row bot">
+          <div class="chat-avatar">⚕️</div>
+          <div class="chat-bubble">أهلاً! أنا مساعدك الدوائي 👋<br/>اسألني عن أي دواء، مثيل، تعارض، أو جرعة.</div>
+        </div>
+      </div>
+      <div class="chat-input-bar">
+        <input id="chatInput" type="text" placeholder="اكتب سؤالك..." onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" onclick="sendChat()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPANIES PAGE -->
+  <div id="page-companies" class="screen">
+    <div class="page-top"><h1>الشركات المنتجة 🏭</h1><p>تصفح الأدوية حسب الشركة</p></div>
+    <div class="search-wrap">
+      <div class="search-input-group">
+        <span class="s-icon">🏭</span>
+        <input id="companySearch" type="text" placeholder="ابحث عن شركة..." oninput="filterCompanies()" autocomplete="off"/>
+      </div>
+    </div>
+    <div id="companiesList" class="companies-grid"></div>
+    <!-- Company drugs -->
+    <div id="companyDrugsView" style="display:none">
+      <button class="back-btn" onclick="backToCompanies()">‹ رجوع للشركات</button>
+      <div class="page-top" style="margin-top:16px">
+        <h1 id="companyTitle"></h1>
+        <p id="companyCount"></p>
+      </div>
+      <div id="companyDrugsList" class="cards-list"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SHEET -->
   <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
   <div class="bottom-sheet" id="bottomSheet">
     <div class="sheet-pill"></div>
     <div id="sheetContent" class="sheet-body"></div>
   </div>
-
-  <!-- Mobile Bottom Nav -->
-  <nav class="bottom-nav">
-    <button class="bn-item active" data-page="search" onclick="showPage('search',this)">
-      <span class="bn-icon">🔍</span><span class="bn-label">بحث</span>
-    </button>
-    <button class="bn-item" data-page="equivalent" onclick="showPage('equivalent',this)">
-      <span class="bn-icon">💊</span><span class="bn-label">مثيل</span>
-    </button>
-    <button class="bn-item" data-page="interactions" onclick="showPage('interactions',this)">
-      <span class="bn-icon">⚠️</span><span class="bn-label">تعارضات</span>
-    </button>
-    <button class="bn-item" data-page="ai" onclick="showPage('ai',this)">
-      <span class="bn-icon">🤖</span><span class="bn-label">مساعد</span>
-    </button>
-  </nav>
 
 </div>
 
