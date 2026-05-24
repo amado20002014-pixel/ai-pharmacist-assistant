@@ -665,6 +665,16 @@ body {
 .logout-btn:hover { color: #dc2626; background: #fee2e2; }
 
 .mobile-logout {
+  background: #fee2e2;
+  border: none;
+  color: #dc2626;
+  font-family: 'Cairo', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
   background: none; border: none;
   font-size: 20px; cursor: pointer;
   color: var(--text-3); padding: 8px;
